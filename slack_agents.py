@@ -118,7 +118,9 @@ BUILTIN_BACKENDS: dict[str, dict[str, Any]] = {
         },
         "default_args": ["-c", "sandbox_mode=workspace-write"],
         "instructions": "prepend",
-        "session_errors": [r"(session|thread|conversation|rollout).{0,40}(not found|no such|does not exist)"],
+        # e.g. "thread/resume failed: no rollout found for thread id ..."
+        "session_errors": [r"(session|thread|conversation|rollout).{0,40}(not found|no such|does not exist)",
+                           r"no (rollout|session|thread|conversation) found", r"thread/resume failed"],
     },
     "gemini": {
         "executables": ["gemini"],

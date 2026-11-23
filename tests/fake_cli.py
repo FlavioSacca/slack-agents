@@ -35,7 +35,7 @@ if flavour == "claude" and os.environ.get("FAKE_NO_FILE_FLAG") and "--append-sys
     print("error: unknown option '--append-system-prompt-file'", file=sys.stderr); sys.exit(1)
 if resume == "bad-session":
     msg = {"claude": "No conversation found with session ID: bad-session",
-           "codex": "Error: thread bad-session not found",
+           "codex": "Error: thread/resume: thread/resume failed: no rollout found for thread id bad-session (code -32600)",
            "gemini": "Error resuming session: session bad-session not found",
            "cursor": "Chat bad-session not found"}[flavour]
     print(msg, file=sys.stderr); sys.exit(1)
