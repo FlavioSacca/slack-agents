@@ -122,8 +122,10 @@ BUILTIN_BACKENDS: dict[str, dict[str, Any]] = {
     },
     "gemini": {
         "executables": ["gemini"],
-        "command": ["gemini", "--output-format", "stream-json", "{args}"],
-        "resume_command": ["gemini", "--output-format", "stream-json", "--resume", "{session_id}", "{args}"],
+        # --skip-trust: headless Gemini CLI refuses to run in a folder not marked as trusted.
+        "command": ["gemini", "--output-format", "stream-json", "--skip-trust", "{args}"],
+        "resume_command": ["gemini", "--output-format", "stream-json", "--skip-trust", "--resume", "{session_id}",
+                           "{args}"],
         "prompt": "stdin",
         "output": "jsonl",
         "events": {

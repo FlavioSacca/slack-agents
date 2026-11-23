@@ -190,11 +190,11 @@ async def main():
     t4, who = await who_answers("C1", f"<@{V.user_id}> review")
     c = calls(log)[-1]
     r = replies(t4["ts"], "Reviewer")
-    check(c["args"] == ["--output-format", "stream-json", "--approval-mode", "auto_edit"], f"Gemini new run: {c['args']}")
+    check(c["args"] == ["--output-format", "stream-json", "--skip-trust", "--approval-mode", "auto_edit"], f"Gemini new run: {c['args']}")
     check(len(r) == 1 and "Reply from reviewer (gemini)" in r[0]["text"] and "check the files" not in r[0]["text"], "Text before tool calls is dropped, chunks joined")
     sid = bridge.sessions.get(f"Reviewer|C1|{t4['ts']}")["session_id"]
     await who_answers("C1", f"<@{V.user_id}> again", t4["ts"])
-    check(calls(log)[-1]["args"] == ["--output-format", "stream-json", "--resume", sid, "--approval-mode", "auto_edit"], "Gemini resumes with --resume")
+    check(calls(log)[-1]["args"] == ["--output-format", "stream-json", "--skip-trust", "--resume", sid, "--approval-mode", "auto_edit"], "Gemini resumes with --resume")
 
     print("\n5. Cursor: JSON, fixed hint as argument, message on stdin")
     t5, who = await who_answers("C1", f"<@{G.user_id}> design it")

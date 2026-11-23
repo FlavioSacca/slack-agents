@@ -77,6 +77,8 @@ Remember that `args` replaces the default arguments, so include the permission s
 
 For Codex, set permissions with `-c sandbox_mode=…`, not `-s`/`--sandbox`: Codex refuses `-s` when continuing a conversation.
 
+**Gemini CLI needs an API key.** Since June 18, 2026 Google no longer serves Gemini CLI to individual Google-account sign-ins (free, Google AI Pro and AI Ultra). Set the `GEMINI_API_KEY` environment variable with a key from Google AI Studio before starting the bridge: usage is then billed per token, with a small free quota. Vertex AI and Gemini Code Assist Standard/Enterprise sign-ins work too. The preset passes `--skip-trust`, because headless Gemini CLI refuses to run in a folder that isn't marked as trusted.
+
 **Signing in for unattended use.** The bridge runs the CLIs in the background, where they can't open a browser to sign in again. If an agent replies with an authentication error, sign that CLI in again in a terminal. For Claude Code, `claude setup-token` creates a token valid for one year. Set it as the `CLAUDE_CODE_OAUTH_TOKEN` environment variable and Claude Code won't need to sign in again.
 
 ## Connecting another CLI

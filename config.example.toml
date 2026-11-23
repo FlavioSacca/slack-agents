@@ -99,7 +99,8 @@ folder = "~/Agents/reviewer"
 description = "Reviews texts and code and points out problems and improvements."
 bot_token = "xoxb-..."
 app_token = "xapp-..."
-# Gemini CLI. Default: ["--approval-mode", "auto_edit"] (approves file edits).
+# Gemini CLI. Needs an API key: set the GEMINI_API_KEY environment variable (Google sign-in for
+# individuals is no longer served). Default: ["--approval-mode", "auto_edit"] (approves file edits).
 # Other modes: "default", "plan" (read only), "yolo" (approves everything).
 # args = ["--approval-mode", "auto_edit", "-m", "MODEL-NAME"]
 
