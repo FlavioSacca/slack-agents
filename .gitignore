@@ -1,0 +1,9 @@
+# Your configuration holds the Slack tokens: never commit it
+config.toml
+# Sessions, logs, instructions and voice files written at runtime
+state/
+*.log
+__pycache__/
+*.pyc
+.venv/
+venv/

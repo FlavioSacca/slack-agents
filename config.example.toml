@@ -1,0 +1,191 @@
+# Configuration for slack_agents.py
+# Copy this file to "config.toml" (next to the script) and fill it in.
+# It holds the bots' tokens: keep it private.
+#
+# Windows paths: use forward slashes ("C:/Users/me/Agents/researcher") or single quotes
+# ('C:\Users\me\Agents\researcher'). Backslashes inside double quotes don't work in TOML.
+
+# Slack member IDs of the people allowed to instruct the agents (usually just you).
+# Where to find yours: in Slack click your profile picture > Profile > ⋮ (More) > "Copy member ID".
+# If the list is empty, anyone in the workspace can make the agents work on your computer.
+authorized_users = ["U0123456789"]
+
+# How many replies in a row the agents may exchange in a thread without a person stepping in.
+# After that they pause until you write in the thread.
+max_agent_exchanges = 6
+
+# Longest time a single agent reply may take (minutes).
+timeout_minutes = 20
+
+# How many agents may work at the same time.
+max_parallel_agents = 3
+
+# How many earlier thread messages an agent receives as context.
+max_context_messages = 40
+
+# Writing one of these words in a thread stops every agent in that thread
+# (outside a thread: in the whole channel). Add words in your language, e.g. "basta".
+stop_words = ["stop"]
+
+# In a direct message with an agent, one of these words starts the conversation over.
+reset_words = ["reset", "new conversation"]
+
+# --- Talking without @mentions ---
+# In a thread, messages without mentions go to the agent that replied last.
+follow_threads = true
+# A message that starts with an agent's name calls it even without @
+# ("Reviewer, have a look" or "Researcher and Reviewer: ideas?").
+call_by_name = true
+# Messages starting like this are never passed to the agents (notes for people).
+ignore_prefix = "//"
+
+# --- Voice messages ---
+[voice]
+# Voice messages are transcribed and passed to the agent as text.
+# Transcription on this computer uses Whisper:  python -m pip install faster-whisper
+# Without Whisper, Slack's own transcript is used when Slack has made one.
+transcribe = true
+# Whisper model: "base" (fast), "small" (recommended), "medium" or "large-v3" (more accurate, slower).
+# It is downloaded the first time (from about 150 MB to 3 GB depending on the model).
+whisper_model = "small"
+# Language of the voice messages, e.g. "it" or "en"; "" to detect it automatically.
+language = ""
+
+
+# ---------------------------------------------------------------------------
+# Agents: one [[agents]] block each.
+#   name          one word: the name agents use to mention each other (@Name)
+#   cli           which command-line agent runs it: "claude", "codex", "gemini", "cursor",
+#                 or the name of a [cli.NAME] section you define below
+#   folder        the agent's working folder, with its instruction file
+#                 (CLAUDE.md for Claude Code, AGENTS.md for Codex and Cursor, GEMINI.md for Gemini)
+#   description   one line on what it does: the other agents read it to know whom to ask
+#   bot_token     "Bot User OAuth Token" (xoxb-...), from OAuth & Permissions of the Slack app
+#   app_token     "App-Level Token" (xapp-...), from Basic Information > App-Level Tokens
+#   args          (optional) extra arguments for the CLI: permissions, model and so on.
+#                 They replace the CLI's default arguments (see the examples in each block).
+#   dedicated_channels  (optional) IDs of channels where the agent answers every message without
+#                 being called. The ID is at the bottom of the channel details (click the channel
+#                 name), e.g. ["C0123ABCD"]
+# ---------------------------------------------------------------------------
+
+[[agents]]
+name = "Researcher"
+cli = "claude"
+folder = "~/Agents/researcher"
+description = "Looks things up, reads documents and writes summaries with sources."
+bot_token = "xoxb-..."
+app_token = "xapp-..."
+# Claude Code. Default: ["--permission-mode", "acceptEdits"] (reads and edits files in its folder).
+# Other permission modes: "default", "plan" (read only), "auto", "bypassPermissions" (anything).
+# args = ["--permission-mode", "acceptEdits", "--model", "opus", "--allowedTools", "WebSearch", "WebFetch"]
+
+[[agents]]
+name = "Developer"
+cli = "codex"
+folder = "~/Agents/developer"
+description = "Writes and changes code, runs the tests."
+bot_token = "xoxb-..."
+app_token = "xapp-..."
+# Codex CLI. Default: ["-c", "sandbox_mode=workspace-write"] (edits files in its folder).
+# Use -c sandbox_mode=... (read-only, workspace-write, danger-full-access), not -s/--sandbox:
+# Codex refuses -s when continuing a conversation.
+# args = ["-c", "sandbox_mode=workspace-write", "-m", "MODEL-NAME"]
+
+[[agents]]
+name = "Reviewer"
+cli = "gemini"
+folder = "~/Agents/reviewer"
+description = "Reviews texts and code and points out problems and improvements."
+bot_token = "xoxb-..."
+app_token = "xapp-..."
+# Gemini CLI. Default: ["--approval-mode", "auto_edit"] (approves file edits).
+# Other modes: "default", "plan" (read only), "yolo" (approves everything).
+# args = ["--approval-mode", "auto_edit", "-m", "MODEL-NAME"]
+
+[[agents]]
+name = "Designer"
+cli = "cursor"
+folder = "~/Agents/designer"
+description = "Designs interfaces and writes front-end code."
+bot_token = "xoxb-..."
+app_token = "xapp-..."
+# Cursor CLI. Default: no extra arguments, so it can read and propose but changes nothing.
+# Add "--force" to let it edit files and run commands (except those your Cursor rules deny).
+# args = ["--force", "--model", "MODEL-NAME"]
+
+
+# ---------------------------------------------------------------------------
+# CLI settings (optional)
+#
+# The four built-in CLIs work as they are. Add a [cli.NAME] section only to change something,
+# e.g. the program's location when it isn't found on the PATH, or the default arguments used by
+# every agent of that CLI that has no args of its own:
+#
+#   [cli.claude]
+#   executable = "C:/Users/me/.local/bin/claude.exe"
+#   default_args = ["--permission-mode", "acceptEdits"]
+#
+#   [cli.codex]
+#   executable = "C:/Users/me/AppData/Roaming/npm/codex.cmd"
+#   default_args = ["-c", "sandbox_mode=workspace-write"]
+#
+#   [cli.gemini]
+#   executable = "C:/Users/me/AppData/Roaming/npm/gemini.cmd"
+#   default_args = ["--approval-mode", "auto_edit"]
+#
+#   [cli.cursor]
+#   executable = "cursor-agent"          # older installs use this name instead of "agent"
+#   default_args = ["--force"]
+#   # prompt = "arg"                     # if the agent says it can't see your message
+#
+# To find where a program is: "where codex" (Windows) or "which codex" (macOS/Linux).
+#
+# Any other command-line agent can be connected by describing it in a [cli.NAME] section and
+# then using cli = "NAME" in an agent. Keys:
+#
+#   command         the arguments for a new conversation. Placeholders:
+#                     {args}         the agent's args (or default_args)
+#                     {prompt}       the message, when prompt = "arg"
+#                     {session_id}   the conversation to continue (resume_command only)
+#                     {workdir}      the agent's folder (the CLI also runs inside it)
+#                     {instructions_args}, {instructions_file}   see "instructions"
+#   resume_command  (optional) the arguments to continue a conversation. Without it, or without a
+#                   way to read the session id, the agent gets the whole conversation every time.
+#   prompt          "stdin" (default): the message is written to the CLI's standard input
+#                   "arg": the message replaces {prompt} in the command
+#   stdin_hint      (optional) with prompt = "stdin", a fixed text put in {prompt}
+#   output          "text": everything the CLI prints is the reply
+#                   "json": one JSON object; set text_field and, for conversations, session_field
+#                   "jsonl": one JSON event per line; set [cli.NAME.events]
+#   text_field, session_field, error_field, error_flag, cost_field
+#                   dotted paths into the JSON object ("result", "data.text"...)
+#   default_args    args used when the agent has none
+#   instructions    "prepend" (default): the bridge's Slack instructions go before the first message
+#                   "args": they are passed with instructions_args, e.g.
+#                   ["--system-prompt-file", "{instructions_file}"]
+#   session_errors  (optional) regular expressions of the error printed when a conversation to
+#                   continue no longer exists: the bridge then starts a new one
+#   version_args    arguments that print the version, checked at startup (default ["--version"])
+#
+# Example: a CLI that takes the message as an argument and prints plain text.
+#
+#   [cli.mycli]
+#   command = ["mycli", "run", "{args}", "--message", "{prompt}"]
+#   prompt = "arg"
+#   output = "text"
+#
+# Example: a CLI that prints JSON Lines events and can continue conversations.
+#
+#   [cli.othercli]
+#   command = ["othercli", "--json", "{args}"]
+#   resume_command = ["othercli", "--json", "--continue", "{session_id}", "{args}"]
+#   output = "jsonl"
+#   [cli.othercli.events]
+#   session = [{ match = { type = "start" }, field = "session" }]
+#   # join: "last" (last matching event), "concat" (all of them), or "last_block"
+#   # (those after the last "reset" event, e.g. after the last tool call)
+#   text = { match = { type = "message", role = ["assistant"] }, field = "content", join = "last_block" }
+#   reset = [{ type = "tool_call" }]
+#   error = [{ match = { type = "error" }, field = "message" }]
+# ---------------------------------------------------------------------------

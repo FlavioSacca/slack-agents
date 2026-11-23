@@ -1,0 +1,4 @@
+slack-bolt>=1.18
+aiohttp>=3.9
+# Optional: transcribe voice messages on this computer
+# faster-whisper>=1.1
